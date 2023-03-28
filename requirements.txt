@@ -1,5 +1,0 @@
-alembic
-asyncpg
-fastapi[all]
-python-dotenv
-SQLAlchemy==1.4.47
