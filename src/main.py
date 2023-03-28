@@ -18,6 +18,5 @@ async def document_search(text: str):
 @app.get("/")
 async def get_specific_operations(session: AsyncSession = Depends(get_async_session)):
     query = select(document)
-    execute = await session.execute(query)
-    result = [{'id': _id, 'rubrics': rubrics, 'text': text, 'date': date} for _id, rubrics, text, date in execute.all()]
-    return result
+    result = await session.execute(query)
+    return result.all()
