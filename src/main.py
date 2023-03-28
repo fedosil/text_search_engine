@@ -15,6 +15,6 @@ async def document_search(text: str):
 
 @app.get("/")
 async def get_specific_operations(session: AsyncSession = Depends(get_async_session)):
-    query = select(document)
+    query = select(document).limit(20)
     result = await session.execute(query)
     return result.all()
