@@ -33,33 +33,33 @@ es = Elasticsearch(
 
 # print(es.info)
 index_name = 'my_index'
-# if es.indices.exists(index=index_name):
-#     es.indices.delete(index=index_name)
-#
-# body = {
-#     'mappings': {
-#         'properties': {
-#             'id': {'type': 'integer'},
-#             'text': {'type': 'text'}
-#         }
-#     }
-# }
-#
-# es.indices.create(index='my_index')
-#
-# # index data in Elasticsearch
-# conn = engine.connect()
-# stmt = document.select()
-# result = conn.execute(stmt)
-#
-# bulk_data = []
-#
-# for row in result:
-#     bulk_data.append({
-#         '_index': index_name,
-#         '_id': row['id'],
-#         'id': row['id'],
-#         'text': row['text']
-#     })
-#
-# bulk(es, bulk_data)
+if es.indices.exists(index=index_name):
+    es.indices.delete(index=index_name)
+
+body = {
+    'mappings': {
+        'properties': {
+            'id': {'type': 'integer'},
+            'text': {'type': 'text'}
+        }
+    }
+}
+
+es.indices.create(index='my_index')
+
+# index data in Elasticsearch
+conn = engine.connect()
+stmt = document.select()
+result = conn.execute(stmt)
+
+bulk_data = []
+
+for row in result:
+    bulk_data.append({
+        '_index': index_name,
+        '_id': row['id'],
+        'id': row['id'],
+        'text': row['text']
+    })
+
+bulk(es, bulk_data)
