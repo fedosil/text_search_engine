@@ -8,6 +8,7 @@ DB_PORT = os.environ.get("DB_PORT")
 DB_NAME = os.environ.get("DB_NAME")
 DB_USER = os.environ.get("DB_USER")
 DB_PASS = os.environ.get("DB_PASS")
+#
 ES_PASS = os.environ.get("ES_PASS")
 ES_USER = os.environ.get("ES_USER")
 ES_PATH_CA_CERTS = os.environ.get("ES_PATH_CA_CERTS")
