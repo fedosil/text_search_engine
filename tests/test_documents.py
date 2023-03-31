@@ -1,13 +1,14 @@
 import datetime
+from unittest.mock import patch
 
 from httpx import AsyncClient
-from sqlalchemy import insert, select
+from sqlalchemy import insert
 
-from conftest import client, async_session_maker
+from conftest import async_session_maker
 from src.models import document
 
 
-async def test_create_document():
+async def test_document_search(ac: AsyncClient):
     async with async_session_maker() as session:
         stmt = insert(document).values(
             id=1,
@@ -16,25 +17,9 @@ async def test_create_document():
             rubrics=["VK-1603736028819866", "VK-75740592382", "VK-34023136930"])
         await session.execute(stmt)
         await session.commit()
-
-        query = select(document)
-        result = await session.execute(query)
-        assert result.all() == [(
-            1,
-            'test',
-            datetime.datetime(2019, 1, 20, 14, 9, 2),
-            ['VK-1603736028819866', 'VK-75740592382', 'VK-34023136930'])]
-
-
-async def test_document_search(ac: AsyncClient):
-    response = await ac.get('/document', params={'text': 'test'})
-    assert response.status_code == 200
-
-# async def test_get_specific_operations(ac: AsyncClient):
-#     response = await ac.get("/operations", params={
-#         "operation_type": "Выплата купонов",
-#     })
-#
-#     assert response.status_code == 200
-#     assert response.json()["status"] == "success"
-#     assert len(response.json()["data"]) == 1
+    with patch('src.main.es.submit') as mock_es_submit:
+        mock_es_submit.return_value = {
+            'response': {'hits': {'hits': [{'_source': {'id': 1}}]}}}
+        result = await ac.get('/document/test', headers={'Content-Type': 'application/json'})
+        assert result.status_code == 200
+        assert len(result.json()) == 1
