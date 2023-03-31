@@ -3,7 +3,7 @@ from elasticsearch.helpers import bulk
 from sqlalchemy import create_engine
 
 from src.config import DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
-from src.models import metadata, document, es, index_name
+from src.models import metadata, document, es_base_client, index_name
 
 engine = create_engine(f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
@@ -15,8 +15,8 @@ df = df.where(pd.notnull(df), None)
 
 df.to_sql('document', engine, if_exists='append', index=False, method='multi')
 
-if es.indices.exists(index=index_name):
-    es.indices.delete(index=index_name)
+if es_base_client.indices.exists(index=index_name):
+    es_base_client.indices.delete(index=index_name)
 
 body = {
     'mappings': {
@@ -27,7 +27,7 @@ body = {
     }
 }
 
-es.indices.create(index=index_name)
+es_base_client.indices.create(index=index_name)
 
 conn = engine.connect()
 stmt = document.select()
@@ -35,12 +35,12 @@ result = conn.execute(stmt)
 
 bulk_data = []
 
-for row in result:
+for row in result.fetchall():
     bulk_data.append({
         '_index': index_name,
-        '_id': row['id'],
-        'id': row['id'],
-        'text': row['text']
+        '_id': row[0],
+        'id': row[0],
+        'text': row[1]
     })
 
-bulk(es, bulk_data)
+bulk(es_base_client, bulk_data)
