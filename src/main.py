@@ -11,6 +11,7 @@ from src.models import document, es, index_name, es_base_client, Document
 app = FastAPI()
 
 
+
 @app.get("/document/{text}")
 async def document_search(text: str, session: AsyncSession = Depends(get_async_session)):
     resp = es.submit(index=index_name, q=text, default_operator='AND', df='text', size=10000)
@@ -24,12 +25,12 @@ async def document_search(text: str, session: AsyncSession = Depends(get_async_s
 
 
 @app.delete('/document/{id}')
-async def document_delete(_id: int, session: AsyncSession = Depends(get_async_session)):
+async def document_delete(item_id: int, session: AsyncSession = Depends(get_async_session)):
     try:
-        es_base_client.delete(index=index_name, id=_id)
-        query = select(document).filter(document.c.id == _id)
+        es_base_client.delete(index=index_name, id=item_id)
+        query = select(document).filter(document.c.id == item_id)
         result = await session.execute(query)
-        obj = await session.get(Document, _id)
+        obj = await session.get(Document, item_id)
         await session.delete(obj)
         await session.commit()
         return {'message': 'Document deleted', 'document': result.all()}
