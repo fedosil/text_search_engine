@@ -4,7 +4,6 @@ from typing import AsyncGenerator
 
 import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -15,7 +14,6 @@ from src.models import metadata, document
 from src.config import (DB_TEST_HOST, DB_TEST_NAME, DB_TEST_PASS, DB_TEST_PORT, DB_TEST_USER)
 from src.main import app
 
-# DATABASE
 DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_TEST_USER}:{DB_TEST_PASS}@{DB_TEST_HOST}:{DB_TEST_PORT}/{DB_TEST_NAME}"
 
 engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)
@@ -44,7 +42,6 @@ async def prepare_database():
         await conn.run_sync(metadata.drop_all)
 
 
-# SETUP
 @pytest.fixture(scope='session')
 def event_loop(request):
     """Create an instance of the default event loop for each test case."""
