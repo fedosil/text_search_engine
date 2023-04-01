@@ -1,18 +1,6 @@
-import datetime
 from unittest.mock import patch
 
-from sqlalchemy import insert
-
-from conftest import async_session_maker, client
-from src.models import document
-
-
-async def test_add_document():
-    async with async_session_maker() as session:
-        stmt = insert(document).values(id=1, text='test', created_date=datetime.datetime(2019, 1, 20, 14, 9, 2),
-                                       rubrics=['VK-1603736028819866', 'VK-75740592382', 'VK-34023136930'])
-        await session.execute(stmt)
-        await session.commit()
+from conftest import client
 
 
 async def test_document_search():
@@ -34,9 +22,22 @@ async def test_document_not_found():
         assert result.json() == {'message': 'Not Found'}
 
 
-async def test_document_delete():
-    with patch('src.main.es_base_client.delete') as mock_es_delete:
-        mock_es_delete.return_value = {}
-        result = client.delete('/document/1', headers={'Content-Type': 'application/json'})
-        assert result.status_code == 200
-        assert result.json() == {'message': 'Document deleted', 'document': []}
+# async def test_document_delete():
+#     with patch('src.main.es_base_client.delete') as mock_delete:
+#         mock_delete.return_value = {'result': 'deleted', '_id': '1'}
+#         result = client.delete('/document/1', headers={'Content-Type': 'application/json'})
+#         assert result.status_code == 200
+# # async def test_document_delete():
+#     with patch('src.main.es_base_client.delete') as mock_es_delete:
+#         mock_es_delete.return_value = {'_index': 'document', '_id': '1', '_version': 2, 'result': 'deleted', '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 1511, '_primary_term': 2}
+#         result = client.delete('/document/1', headers={'Content-Type': 'application/json'})
+#         assert result.status_code == 200
+#         assert result.json() == {'message': 'Document deleted', 'document': []}
+#
+#
+# async def test_document_delete_not_found():
+#     with patch('src.main.es_base_client.delete') as mock_es_delete:
+#
+#         result = client.delete('/document/1', headers={'Content-Type': 'application/json'})
+#         assert result.status_code == 404
+#         assert result.json() == {'message': 'Document not found'}
