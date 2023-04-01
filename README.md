@@ -1,16 +1,13 @@
-# Store Server
+# Text Search Engine
 
-The project for study Django.
+Test job
 
 #### Stack:
 
 - [Python](https://www.python.org/downloads/)
-- [Django](https://www.djangoproject.com/)
+- [FastApi](https://fastapi.tiangolo.com/)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Redis](https://redis.io/)
-- [Celery](https://docs.celeryq.dev/en/stable/getting-started/introduction.html)
-- [DRF](https://www.django-rest-framework.org/)
-- [Stripe](https://stripe.com/)
+- [Elasticsearch](https://www.elastic.co/)
 
 ## Local Developing
 
@@ -18,29 +15,30 @@ All actions should be executed from the source directory of the project and only
 
 1. Firstly, create and activate a new virtual environment:
    ```bash
-   python3.9 -m venv ../venv
+   python -m venv ../venv
    source ../venv/bin/activate
    ```
-   
+
 2. Install packages:
    ```bash
    pip install --upgrade pip
    pip install -r requirements.txt
    ```
-   
-3. Run project dependencies, migrations, fill the database with the fixture data etc.:
+
+3. Launch PostgreSQL and create a database.
+
+4. Install [Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
+
+5. Copy the http_ca.crt security certificate from your Docker container to your local machine:
    ```bash
-   ./manage.py migrate
-   ./manage.py loaddata <path_to_fixture_files>
-   ./manage.py runserver 
+   docker cp es01:/usr/share/elasticsearch/config/certs/http_ca.crt .
    ```
-   
-4. Run [Redis Server](https://redis.io/docs/getting-started/installation/):
+6. Create .env and add environment variables
+7. Import test data and create an index in elasticsearch
    ```bash
-   redis-server
+   python import_data.py
    ```
-   
-5. Run Celery:
+8. Run:
    ```bash
-   celery -A store worker --loglevel=INFO
+   uvicorn src.main:app --reload
    ```
