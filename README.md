@@ -27,7 +27,7 @@ All actions should be executed from the source directory of the project and only
 
 3. Launch PostgreSQL and create a database.
 
-4. Install [Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
+4. [Install Elasticsearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html).
 
 5. Copy the http_ca.crt security certificate from your Docker container to your local machine:
    ```bash

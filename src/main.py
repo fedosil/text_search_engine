@@ -23,7 +23,7 @@ async def document_search(text: str, session: AsyncSession = Depends(get_async_s
     return JSONResponse(status_code=404, content={"message": "Not Found"})
 
 
-@app.delete('/document/{id}')
+@app.delete('/document/{item_id}')
 async def document_delete(item_id: int, session: AsyncSession = Depends(get_async_session)):
     try:
         es_base_client.delete(index=index_name, id=item_id)
