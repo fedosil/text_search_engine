@@ -48,10 +48,3 @@ def event_loop(request):
 
 
 client = TestClient(app)
-
-
-@pytest.fixture(scope="session")
-async def ac() -> AsyncGenerator[AsyncClient, None]:
-    async with AsyncClient(app=app, base_url="http://test") as ac:
-        yield ac
-
