@@ -15,7 +15,6 @@ app = FastAPI()
 async def document_search(text: str, session: AsyncSession = Depends(get_async_session)):
     resp = es.submit(index=index_name, q=text, default_operator='AND', df='text', size=10000)
     id_list = [c['_source']['id'] for c in resp['response']['hits']['hits']]
-    print(len(id_list))
     if id_list:
         query = select(document).filter(document.c.id.in_(id_list)).order_by(document.c.created_date).limit(20)
         result = await session.execute(query)
