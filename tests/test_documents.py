@@ -3,7 +3,7 @@ from unittest.mock import patch
 from conftest import client
 
 
-async def test_document_search():
+def test_document_search():
     with patch('src.main.es.submit') as mock_es_submit:
         mock_es_submit.return_value = {
             'response': {'hits': {'hits': [{'_source': {'id': 1}}]}}}
@@ -13,7 +13,7 @@ async def test_document_search():
         assert result.json()[0]['text'] == 'test'
 
 
-async def test_document_not_found():
+def test_document_not_found():
     with patch('src.main.es.submit') as mock_es_submit:
         mock_es_submit.return_value = {
             'response': {'hits': {'hits': []}}}
