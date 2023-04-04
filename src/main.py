@@ -5,16 +5,16 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
-from src.database import get_async_session
-from src.models import document, es, index_name, es_base_client, Document
+from src.database import get_async_session, es_base_client
+from src.models import document, index_name, Document
 
 app = FastAPI()
 
 
 @app.get("/document/{text}")
 async def document_search(text: str, session: AsyncSession = Depends(get_async_session)):
-    resp = es.submit(index=index_name, q=text, default_operator='AND', df='text', size=10000)
-    id_list = [c['_source']['id'] for c in resp['response']['hits']['hits']]
+    resp = es_base_client.search(index=index_name, q=text, default_operator='AND', df='text', size=10000)
+    id_list = [c['_source']['id'] for c in resp['hits']['hits']]
     if id_list:
         query = select(document).filter(document.c.id.in_(id_list)).order_by(document.c.created_date).limit(20)
         result = await session.execute(query)

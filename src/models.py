@@ -1,9 +1,5 @@
-from elasticsearch import Elasticsearch
-from elasticsearch.client import AsyncSearchClient
 from sqlalchemy import Column, Integer, String, ARRAY, MetaData, Table, TIMESTAMP
 from sqlalchemy.ext.declarative import declarative_base
-
-from src.config import ES_PASS, ES_PATH_CA_CERTS, ES_USER, ES_HOST, ES_PORT
 
 metadata = MetaData()
 
@@ -27,13 +23,5 @@ class Document(Base):
     created_date = Column(TIMESTAMP)
     rubrics = Column(ARRAY(String))
 
-
-es_base_client = Elasticsearch(
-    f"https://{ES_HOST}:{ES_PORT}",
-    ca_certs=ES_PATH_CA_CERTS,
-    basic_auth=(ES_USER, ES_PASS)
-)
-
-es = AsyncSearchClient(es_base_client)
 
 index_name = 'document'

@@ -11,8 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
-from src.database import get_async_session
-from src.models import metadata, document, es_base_client
+from src.database import get_async_session, es_base_client
+from src.models import metadata, document
 from src.config import (DB_TEST_HOST, DB_TEST_NAME, DB_TEST_PASS, DB_TEST_PORT, DB_TEST_USER)
 from src.main import app
 
