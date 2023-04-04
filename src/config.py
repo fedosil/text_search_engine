@@ -17,5 +17,7 @@ DB_TEST_PASS = os.environ.get("DB_TEST_PASS")
 #
 ES_PASS = os.environ.get("ES_PASS")
 ES_USER = os.environ.get("ES_USER")
+ES_HOST = os.environ.get("ES_HOST")
+ES_PORT = os.environ.get("ES_PORT")
 ES_PATH_CA_CERTS = os.environ.get("ES_PATH_CA_CERTS")
 
