@@ -1,8 +1,7 @@
 from unittest.mock import patch
 
-
 from conftest import client, test_index_name
-from database import es_base_client
+from database import get_es_base_client
 
 
 def test_document_search():
