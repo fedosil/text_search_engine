@@ -19,15 +19,6 @@ df.to_sql('document', engine, if_exists='append', index=False, method='multi')
 if es_base_client.indices.exists(index=index_name):
     es_base_client.indices.delete(index=index_name)
 
-# body = {
-#     'mappings': {
-#         'properties': {
-#             'id': {'type': 'integer'},
-#             'text': {'type': 'text'}
-#         }
-#     }
-# }
-
 es_base_client.indices.create(index=index_name)
 
 conn = engine.connect()
