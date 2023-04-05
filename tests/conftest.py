@@ -5,15 +5,17 @@ import time
 from typing import AsyncGenerator
 
 import pytest
+from elasticsearch import Elasticsearch
 from fastapi.testclient import TestClient
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 
-from src.database import get_async_session, es_base_client
-from src.models import metadata, document
-from src.config import (DB_TEST_HOST, DB_TEST_NAME, DB_TEST_PASS, DB_TEST_PORT, DB_TEST_USER)
+from src.database import get_async_session, get_es_base_client
+from src.models import metadata, document, index_name
+from src.config import DB_TEST_HOST, DB_TEST_NAME, DB_TEST_PASS, DB_TEST_PORT, DB_TEST_USER, ES_TEST_PASS, ES_TEST_HOST, \
+    ES_TEST_PORT, ES_TEST_PATH_CA_CERTS, ES_TEST_USER
 from src.main import app
 
 DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_TEST_USER}:{DB_TEST_PASS}@{DB_TEST_HOST}:{DB_TEST_PORT}/{DB_TEST_NAME}"
@@ -22,7 +24,6 @@ engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)
 async_session_maker = sessionmaker(engine_test, class_=AsyncSession, expire_on_commit=False)
 metadata.bind = engine_test
 
-test_index_name = 'test_document'
 
 
 async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
@@ -30,18 +31,30 @@ async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 
+es_base_test_client = Elasticsearch(
+    f"https://{ES_TEST_HOST}:{ES_TEST_PORT}",
+    ca_certs=ES_TEST_PATH_CA_CERTS,
+    basic_auth=(ES_TEST_USER, ES_TEST_PASS)
+)
+
+
+def override_get_es_base_client():
+    yield es_base_test_client
+
+
 app.dependency_overrides[get_async_session] = override_get_async_session
+app.dependency_overrides[get_es_base_client] = override_get_es_base_client
 
 
 @pytest.fixture(autouse=True, scope='session')
 async def prepare_elasticsearch():
-    es_base_client.create(index=test_index_name, id=1, document={
+    es_base_test_client.create(index=index_name, id=1, document={
         'id': 1,
         'text': 'test',
     })
     time.sleep(1)
     yield
-    es_base_client.indices.delete(index=test_index_name)
+    es_base_test_client.indices.delete(index=index_name)
 
 
 @pytest.fixture(autouse=True, scope='session')
@@ -59,7 +72,6 @@ async def prepare_database():
 
 @pytest.fixture(scope='session')
 def event_loop(request):
-    """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()

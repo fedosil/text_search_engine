@@ -18,14 +18,11 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
 
+es_base_client = Elasticsearch(
+    f"https://{ES_HOST}:{ES_PORT}",
+    ca_certs=ES_PATH_CA_CERTS,
+    basic_auth=(ES_USER, ES_PASS)
+)
 
 def get_es_base_client():
-    es_base_client = Elasticsearch(
-        f"https://{ES_HOST}:{ES_PORT}",
-        ca_certs=ES_PATH_CA_CERTS,
-        basic_auth=(ES_USER, ES_PASS)
-    )
-    try:
-        yield es_base_client
-    finally:
-        es_base_client.close()
+    yield es_base_client

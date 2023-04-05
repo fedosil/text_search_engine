@@ -21,3 +21,9 @@ ES_HOST = os.environ.get("ES_HOST")
 ES_PORT = os.environ.get("ES_PORT")
 ES_PATH_CA_CERTS = os.environ.get("ES_PATH_CA_CERTS")
 
+ES_TEST_PASS = os.environ.get("ES_TEST_PASS")
+ES_TEST_USER = os.environ.get("ES_TEST_USER")
+ES_TEST_HOST = os.environ.get("ES_TEST_HOST")
+ES_TEST_PORT = os.environ.get("ES_TEST_PORT")
+ES_TEST_PATH_CA_CERTS = os.environ.get("ES_TEST_PATH_CA_CERTS")
+

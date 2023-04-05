@@ -1,27 +1,36 @@
-from unittest.mock import patch
+import time
 
-from conftest import client, test_index_name
-from database import get_es_base_client
+from conftest import client, es_base_test_client
+from models import index_name
+
+
+def test_elasticsearch():
+    resp = es_base_test_client.search(index=index_name, q='test')
+    assert len(resp['hits']['hits']) == 1
+    assert resp['hits']['hits'][0]['_source'] == {'id': 1, 'text': 'test'}
 
 
 def test_document_search():
-    with patch('src.main.es_base_client.search') as mock_es_submit:
-        mock_es_submit.return_value = {'hits': {'hits': [{'_source': {'id': 1}}]}}
-        result = client.get('/document/test', headers={'Content-Type': 'application/json'})
-        assert result.status_code == 200
-        assert len(result.json()) == 1
-        assert result.json()[0]['text'] == 'test'
+    result = client.get('/document/test')
+    assert result.status_code == 200
+    assert len(result.json()) == 1
+    assert result.json()[0]['text'] == 'test'
+
+
+def test_document_delete():
+    result = client.delete('/document/1')
+    assert result.status_code == 200
+    assert result.json()['message'] == 'Document deleted'
+    time.sleep(1)
 
 
 def test_document_not_found():
-    with patch('src.main.es_base_client.search') as mock_es_submit:
-        mock_es_submit.return_value = {'hits': {'hits': []}}
-        result = client.get('/document/not-exist', headers={'Content-Type': 'application/json'})
-        assert result.status_code == 404
-        assert result.json() == {'message': 'Not Found'}
+    result = client.get('/document/test')
+    assert result.status_code == 404
+    assert result.json() == {'message': 'Not Found'}
 
 
-def test_elasticsearch_search():
-    resp = es_base_client.search(index=test_index_name, q='test')
-    assert len(resp['hits']['hits']) == 1
-    assert resp['hits']['hits'][0]['_source'] == {'id': 1, 'text': 'test'}
+def test_document_delete_not_found():
+    result = client.delete('/document/0')
+    assert result.status_code == 404
+    assert result.json()['message'] == 'Document not found'

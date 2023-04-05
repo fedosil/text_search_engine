@@ -2,8 +2,9 @@ import pandas as pd
 from elasticsearch.helpers import bulk
 from sqlalchemy import create_engine
 
+from src.database import es_base_client
 from src.config import DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
-from src.models import metadata, document, es_base_client, index_name
+from src.models import metadata, document, index_name
 
 engine = create_engine(f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
