@@ -33,4 +33,4 @@ def test_document_not_found():
 def test_document_delete_not_found():
     result = client.delete('/document/0')
     assert result.status_code == 404
-    assert result.json()['message'] == 'Document not found'
+    assert result.json() == {'message': 'Document not found'}
