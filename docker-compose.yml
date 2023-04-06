@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:15
+    container_name: db_app
+    ports:
+      - 5432:5432
+    env_file:
+      - .env-non-dev
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    container_name: elasticsearch_app
+    environment:
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTIC_PASSWORD=$ES_PASS
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+    env_file:
+      - .env-non-dev
+
+  app:
+    build:
+      context: .
+    container_name: fastapi_app
+    command: ["/fastapi_app/docker/app.sh"]
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - elasticsearch
+    env_file:
+      - .env-non-dev
+

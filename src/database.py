@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+import urllib3
 
 from elasticsearch import Elasticsearch
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -18,11 +19,16 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
 
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 es_base_client = Elasticsearch(
-    f"https://{ES_HOST}:{ES_PORT}",
-    ca_certs=ES_PATH_CA_CERTS,
-    basic_auth=(ES_USER, ES_PASS)
+    f"https://{ES_HOST}:{ES_PORT}/",
+    basic_auth=(ES_USER, ES_PASS),
+    verify_certs=False,
+    ssl_show_warn=False
 )
+
 
 def get_es_base_client():
     yield es_base_client

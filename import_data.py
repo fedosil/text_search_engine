@@ -6,6 +6,8 @@ from src.database import es_base_client
 from src.config import DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
 from src.models import metadata, document, index_name
 
+print('create...')
+
 engine = create_engine(f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
 metadata.create_all(engine)
@@ -13,6 +15,8 @@ metadata.create_all(engine)
 df = pd.read_csv('posts.csv')
 df['rubrics'] = df['rubrics'].apply(lambda x: [r.strip()[1:-1] for r in x[1:-1].split(',')])
 df = df.where(pd.notnull(df), None)
+
+print('import data...')
 
 df.to_sql('document', engine, if_exists='append', index=False, method='multi')
 
@@ -35,4 +39,7 @@ for row in result.fetchall():
         'text': row[1]
     })
 
+
 bulk(es_base_client, bulk_data)
+
+print('done')
