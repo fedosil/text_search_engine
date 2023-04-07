@@ -5,6 +5,7 @@ import time
 from typing import AsyncGenerator
 
 import pytest
+import urllib3
 from elasticsearch import Elasticsearch
 from fastapi.testclient import TestClient
 from sqlalchemy import insert
@@ -25,16 +26,17 @@ async_session_maker = sessionmaker(engine_test, class_=AsyncSession, expire_on_c
 metadata.bind = engine_test
 
 
-
 async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 es_base_test_client = Elasticsearch(
     f"https://{ES_TEST_HOST}:{ES_TEST_PORT}",
-    ca_certs=ES_TEST_PATH_CA_CERTS,
-    basic_auth=(ES_TEST_USER, ES_TEST_PASS)
+    basic_auth=(ES_TEST_USER, ES_TEST_PASS),
+    verify_certs=False,
+    ssl_show_warn=False,
 )
 
 
