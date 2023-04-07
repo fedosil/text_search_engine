@@ -16,7 +16,7 @@ from sqlalchemy.pool import NullPool
 from src.database import get_async_session, get_es_base_client
 from src.models import metadata, document, index_name
 from src.config import DB_TEST_HOST, DB_TEST_NAME, DB_TEST_PASS, DB_TEST_PORT, DB_TEST_USER, ES_TEST_PASS, ES_TEST_HOST, \
-    ES_TEST_PORT, ES_TEST_PATH_CA_CERTS, ES_TEST_USER
+    ES_TEST_PORT, ES_TEST_USER
 from src.main import app
 
 DATABASE_URL_TEST = f"postgresql+asyncpg://{DB_TEST_USER}:{DB_TEST_PASS}@{DB_TEST_HOST}:{DB_TEST_PORT}/{DB_TEST_NAME}"
