@@ -14,8 +14,16 @@ app = FastAPI()
 @app.get("/document/{text}")
 async def document_search(text: str, session: AsyncSession = Depends(get_async_session),
                           es_base_client: Elasticsearch = Depends(get_es_base_client)):
-    resp = es_base_client.search(index=index_name, q=text, default_operator='AND', df='text', size=10000)
-    id_list = [c['_source']['id'] for c in resp['hits']['hits']]
+    size = 1000
+    search_after = [0]
+    id_list = []
+    while True:
+        resp = es_base_client.search(index=index_name, q=text, default_operator='AND', df='text', size=size, sort='id',
+                                     search_after=search_after)
+        if not resp['hits']['hits']:
+            break
+        search_after = resp['hits']['hits'][-1]['sort']
+        id_list.extend(c['_source']['id'] for c in resp['hits']['hits'])
     if id_list:
         query = select(document).filter(document.c.id.in_(id_list)).order_by(document.c.created_date).limit(20)
         result = await session.execute(query)
