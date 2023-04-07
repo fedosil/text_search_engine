@@ -30,7 +30,6 @@ async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 es_base_test_client = Elasticsearch(
     f"https://{ES_TEST_HOST}:{ES_TEST_PORT}",
