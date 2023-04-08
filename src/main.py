@@ -14,7 +14,7 @@ from src.models import document, index_name, Document
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Add a rotating file handler to the logger
+
 handler = RotatingFileHandler('app.log', maxBytes=1024 * 1024 * 10, backupCount=5)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
 logger.addHandler(handler)
@@ -29,17 +29,12 @@ async def document_search(text: str, session: AsyncSession = Depends(get_async_s
     search_after = [0]
     id_list = []
     while True:
-<<<<<<< HEAD
-        resp = es_base_client.search(index=index_name, q=text, default_operator='AND', df='text', size=size, sort='id',
-                                     search_after=search_after)
-=======
         try:
             resp = es_base_client.search(index=index_name, q=text, default_operator='AND', df='text', size=size,
                                          sort='id', search_after=search_after)
         except Exception as e:
             logger.error(f"Search Elasticsearch: {str(e)}")
             return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
->>>>>>> docker-compose
         if not resp['hits']['hits']:
             break
         search_after = resp['hits']['hits'][-1]['sort']
