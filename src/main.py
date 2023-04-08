@@ -14,7 +14,6 @@ from src.models import document, index_name, Document
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-
 handler = RotatingFileHandler('app.log', maxBytes=1024 * 1024 * 10, backupCount=5)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
 logger.addHandler(handler)
