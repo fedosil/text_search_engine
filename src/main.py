@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from src.database import get_async_session, get_es_base_client
 from src.models import document, index_name, Document
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 handler = RotatingFileHandler('app.log', maxBytes=1024 * 1024 * 10, backupCount=5)
