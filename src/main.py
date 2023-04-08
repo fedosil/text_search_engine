@@ -32,12 +32,15 @@ async def document_search(text: str, session: AsyncSession = Depends(get_async_s
             resp = es_base_client.search(index=index_name, q=text, default_operator='AND', df='text', size=size,
                                          sort='id', search_after=search_after)
         except Exception as e:
-            logger.error(f"Search Elasticsearch: {str(e)}")
+            logger.error(f"Search in Elasticsearch: {str(e)}")
             return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
         if not resp['hits']['hits']:
             break
         search_after = resp['hits']['hits'][-1]['sort']
-        id_list.extend(c['_source']['id'] for c in resp['hits']['hits'])
+        resp_id_list = [c['_source']['id'] for c in resp['hits']['hits']]
+        id_list.extend(resp_id_list)
+        if len(resp_id_list) < size:
+            break
     if id_list:
         query = select(document).filter(document.c.id.in_(id_list)).order_by(document.c.created_date).limit(20)
         try:
