@@ -1,12 +1,12 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from elasticsearch import NotFoundError, Elasticsearch
 from fastapi import FastAPI, Depends
+from fastapi.responses import JSONResponse
 
+from elasticsearch import NotFoundError, Elasticsearch
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.responses import JSONResponse
 
 from src.database import get_async_session, get_es_base_client
 from src.models import document, index_name, Document
